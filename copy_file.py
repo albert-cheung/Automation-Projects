@@ -1,4 +1,8 @@
+#Purpose of this query is to take a large number of queries and parse them out into digestable chunks.
+
 lines = []
+
+#Strips a list of customer_ids pasted individually on the .txt file
 with open("customer_ids.txt") as file:
     for line in file:
         line = line.strip()
@@ -6,35 +10,29 @@ with open("customer_ids.txt") as file:
 
 lines_length = len(lines)
 
-count = 0
-upper_limit = 499
-query = ''
-if lines_length < 1000:
-    while(count <= (lines_length - 1)):
-        query = query + ',' + lines[count]
-        count = count + 1
-else:
-    print(lines_length % (upper_limit + 1))
-    for x in lines:
 
-        query = query + ',' + lines[count]
+#Adds bracket to the string
+def addBracket(string):
+     return ('(' + string + ')');
 
-'''
-    while (count <= lines_length):
-        count_a = 0
-        while (count_a <= upper_limit):
-            query = query + ',' + lines[count]
-            count_a = count_a + 1
-            count = count + 1
-        print('ended')
+# Turns list array into a string
+myString = ",".join(lines);
 
 
-    while(count <= (lines_length - 1)):
-        while(count <= (upper_limit - 1)):
-            query = query + ',' + lines[count]
-            count = count + 1
-            print(query)
-        print("Upper Limit Reached")
-    upper_limit = upper_limit + 500
-'''
+#Function halflist will add queries into a SQL Query if there are less than 500 queries in the "in" parameter.
+#Otherwise it will continue to divide the list in half and run the queries again.
+def halflist(list):
+    list_length = len(list)
+    if (list_length < 500):
+        myString = ",".join(list)
+        mySQLQuery = "select * from TABLE where COLUMN in (QUERY);"
+        myQueries = addBracket(myString)
+        myFinalQuery = mySQLQuery.replace("QUERY", str(myString), 1)
+        print(myFinalQuery)
+    else:
+        half = len(list)//2
+        return halflist(list[:half]), halflist(list[half:])
+
+
+
 
